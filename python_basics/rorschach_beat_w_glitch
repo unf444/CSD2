@@ -1,0 +1,75 @@
+import pygame
+import time
+import random
+
+# Initialize pygame mixer
+pygame.mixer.init()
+
+# Load sound files
+kick_sound  = pygame.mixer.Sound("C:/Users/unfai/Documents/CSD2/audioFiles/kick.wav")
+snare_sound =  pygame.mixer.Sound("C:/Users/unfai/Documents/CSD2/audioFiles/snare.wav")
+hihat_sound =  pygame.mixer.Sound("C:/Users/unfai/Documents/CSD2/audioFiles/hihat.wav")
+
+# Get user input with time signature limits
+def get_user_input():
+    bpm = int(input("Enter the BPM (Beats Per Minute): "))
+    
+    time_signature_top = int(input("Enter the top number of the time signature (1-16): "))
+    if time_signature_top < 1 or time_signature_top > 16:
+        print("The top number must be between 1 and 16.")
+        return None
+    
+    time_signature_bottom = int(input("Enter the bottom number of the time signature (1-16, e.g., 4 for 4/4): "))
+    if time_signature_bottom < 1 or time_signature_bottom > 16:
+        print("The bottom number must be between 1 and 16.")
+        return None
+    
+    length_in_steps = int(input("Enter the number of steps (length of the beat): "))
+    
+    return bpm, time_signature_top, time_signature_bottom, length_in_steps
+
+# Calculate interval based on time signature
+def calculate_interval(bpm, time_signature_bottom):
+    note_value = 4 / time_signature_bottom  # 4 = quarter notes, 8 = eighth notes, etc.
+    return (60.0 / bpm) * note_value
+
+# Generate basic kick/snare/hihat pattern
+def generate_pattern(length_in_steps, beats_per_measure):
+    kick_pattern = [random.choice([0, 1]) for _ in range(length_in_steps)]
+    snare_pattern = [random.choice([0, 1]) for _ in range(length_in_steps)]
+    hihat_pattern = [random.choice([0, 1]) for _ in range(length_in_steps)]
+    
+    return kick_pattern, snare_pattern, hihat_pattern
+
+# Play the pattern
+def play_pattern(kick_pattern, snare_pattern, hihat_pattern, interval):
+    for i in range(len(kick_pattern)):
+        if kick_pattern[i] == 1:
+            kick_sound.play()
+        if snare_pattern[i] == 1:
+            snare_sound.play()
+        if hihat_pattern[i] == 1:
+            hihat_sound.play()
+        
+        time.sleep(interval)
+
+# Main function
+def main():
+    user_input = get_user_input()
+    if user_input is None:
+        return
+    
+    bpm, time_signature_top, time_signature_bottom, length_in_steps = user_input
+    
+    # Calculate the time between beats
+    interval = calculate_interval(bpm, time_signature_bottom)
+    
+    # Generate patterns
+    kick_pattern, snare_pattern, hihat_pattern = generate_pattern(length_in_steps, time_signature_top)
+    
+    # Play the generated pattern
+    print("Playing the beat...")
+    play_pattern(kick_pattern, snare_pattern, hihat_pattern, interval)
+    
+if __name__ == "__main__":
+    main()
